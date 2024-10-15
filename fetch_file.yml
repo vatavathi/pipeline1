@@ -5,20 +5,26 @@
   gather_facts: false
 
   tasks:
-   - name: check if the file exists
-     stat:
-       path: /home/nikhil/test_touch.txt
-     register: exs
-     delegate_to: localhost
+    - name: checksum on controoled node
+      stat:
+        path: /tmp/test_touch.txt
+      register: remote_file
+    
+    - name: check if the file exists
+      stat:
+        path: /home/nikhil/test_touch.txt
+      register: local_file
+      delegate_to: localhost
 
-   - name: fetching test_touch file
-     fetch:
-       src: /tmp/test_touch.txt
-       dest: /home/nikhil/
-       flat: yes  
-     when: not exs.stat.exists
+    - name: fetching test_touch file
+      fetch:
+        src: /tmp/test_touch.txt
+        dest: /home/nikhil/
+        flat: yes  
+      when: remote_file.stat.checksum != local_file.stat.checksum
+      register: exs
 
-   - name: Debug stat output
-     debug:
-       var: exs
+    - name: Debug stat output
+      debug:
+        var: exs
 

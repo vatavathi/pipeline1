@@ -17,3 +17,8 @@
        dest: /home/nikhil/
        flat: yes  
      when: not exs.stat.exists
+
+   - name: Debug stat output
+     debug:
+       var: exs
+

@@ -1,0 +1,19 @@
+---
+- name: Deploy Node.js Application
+  hosts: webserver  # This refers to the group in your inventory
+  tasks:
+    - name: Pull Docker image
+      docker_image:
+        name: root/my-node-app-image
+        tag: latest
+        pull: yes
+
+    - name: Run Docker container
+      docker_container:
+        name: my-node-app
+        image: root/my-node-app-image:latest
+        state: restarted
+        ports:
+          - "3000:3000"
+        networks:
+          - name: my-node-app-network 

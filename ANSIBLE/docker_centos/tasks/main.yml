@@ -1,0 +1,42 @@
+---
+# tasks file for docker_centos
+#
+
+- name: Update package manager cache
+  yum:
+    name: '*'
+    state: latest
+
+- name: Install prerequisites for CentOS
+  yum:
+    name:
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+    state: present
+
+- name: Add Docker repository
+  yum_repository:
+    name: docker
+    description: Docker
+    baseurl: https://download.docker.com/linux/centos/docker-ce.repo
+    gpgcheck: yes
+    enabled: yes
+    gpgkey: "060A 61C5 1B55 8A7F 742B 77AA C52F EB6B 621E 9F35"
+
+- name: Install Docker
+  yum:
+    name: 
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: latest
+
+- name: Ensure Docker is running
+  service:
+    name: docker
+    state: started
+    enabled: yes
+

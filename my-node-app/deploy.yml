@@ -15,5 +15,6 @@
         state: restarted
         ports:
           - "3000:3000"
+        
         networks:
           - name: my-node-app-network 

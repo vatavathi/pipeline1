@@ -7,10 +7,11 @@
     name: '*'
     state: latest
   register: update
+  ignore_errors: true
 
 - name: cheking eroor while yum update
   debug:
-    var: update.stderr
+    var: update.stderr_lines
     
 - name: Install prerequisites for CentOS
   yum:
@@ -20,6 +21,7 @@
       - lvm2
     state: present
   register: prerequesties
+  ignore_errors: yes
 
 - name: checking error while installing prequisites
   debug:
@@ -29,15 +31,30 @@
   yum_repository:
     name: docker
     description: Docker
-    baseurl: https://download.docker.com/linux/centos/docker-ce.repo
+    baseurl: https://download.docker.com/linux/centos/$releasever/$basearch/stable
     gpgcheck: yes
+    gpgkey: https://download.docker.com/linux/centos/gpg
     enabled: yes
-    gpgkey: "060A 61C5 1B55 8A7F 742B 77AA C52F EB6B 621E 9F35"
   register: repo
 
 - name: checking errors while adding repo
   debug:
     var: repo.stderr
+
+- name: enabling repo
+  shell: |
+    yum clean all
+    yum makecache
+  register: shell
+  ignore_errors: true
+
+- name: cheking errors while enabling repo
+  debug:
+    var: shell.stderr_lines
+
+- name: repo adding output
+  debug:
+    var: shell.stdout_lines
 
 - name: Install Docker
   yum:
@@ -49,6 +66,7 @@
       - docker-compose-plugin
     state: latest
   register: install
+  ignore_errors: true
 
 - name: checking error while docker installation
   debug:

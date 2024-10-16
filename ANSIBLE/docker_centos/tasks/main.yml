@@ -6,7 +6,12 @@
   yum:
     name: '*'
     state: latest
+  register: update
 
+- name: cheking eroor while yum update
+  debug:
+    var: update.stderr
+    
 - name: Install prerequisites for CentOS
   yum:
     name:
@@ -14,6 +19,11 @@
       - device-mapper-persistent-data
       - lvm2
     state: present
+  register: prerequesties
+
+- name: checking error while installing prequisites
+  debug:
+    var: prerequesties.stderr
 
 - name: Add Docker repository
   yum_repository:
@@ -23,6 +33,11 @@
     gpgcheck: yes
     enabled: yes
     gpgkey: "060A 61C5 1B55 8A7F 742B 77AA C52F EB6B 621E 9F35"
+  register: repo
+
+- name: checking errors while adding repo
+  debug:
+    var: repo.stderr
 
 - name: Install Docker
   yum:
@@ -33,10 +48,19 @@
       - docker-buildx-plugin
       - docker-compose-plugin
     state: latest
+  register: install
+
+- name: checking error while docker installation
+  debug:
+    var: install.stderr
 
 - name: Ensure Docker is running
   service:
     name: docker
     state: started
     enabled: yes
+  register: start
 
+- name: cheking errors while starting docker
+  debug:
+    var: start.stderr
